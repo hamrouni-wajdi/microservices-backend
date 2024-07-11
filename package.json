@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db": "nodemon ./services/db/index.js",
+    "ai": "nodemon ./services/AI/index.js",
+    "auth": "nodemon ./services/auth/index.js",
+    "notif": "nodemon ./services/notification/index.js",
+    "payment": "nodemon ./services/payment/index.js",
+    "visualisation": "nodemon ./services/visualisation/index.js",
+    "start": "npm run script1 && npm run script3 && npm run script4",
+    "gateway":"nodemon ./gateway/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-http-proxy": "^2.0.0"
+  }
+}

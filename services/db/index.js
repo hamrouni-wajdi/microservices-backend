@@ -3,12 +3,12 @@ const app = express()
 app.use(express.json());
 require('dotenv').config();
 const mysql = require('mysql2/promise');
-const amqplib = require('amqplib');
 const db = require("./models")
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {FormateData,CreateChannel,PublishMessage,SubscribeMessage,PublishDbEvent}=require("./utils/index")
-
+const amqplib = require('amqplib/callback_api');
+const queue = 'tasks';
 // Sync Sequelize models with the database
 
 db.sequelize.sync({ force: true })
@@ -23,12 +23,6 @@ app.get("/",(req,res)=>{
     return res.status(200).json({"msg": "Hello from DB"})
 })
 
-
-const startChannel = async()=>{
-  const channel = await CreateChannel()
-  SubscribeMessage(channel, process.env.CUSTOMER_SERVICE);
-}
-startChannel()
 
 app.post("/register",async(req,res)=>{
   console.log("register customer ===============================")
@@ -122,9 +116,48 @@ app.get("/products",async(req,res)=>{
   }
 })
 
+// const startChannel = async()=>{
+//   const channel = await CreateChannel()
+//   SubscribeMessage(channel, process.env.CUSTOMER_SERVICE);
+// }
+// startChannel()
+
 
 app.listen(process.env.DB_PORT, () => {
     console.log(`database service is Listening to Port ${process.env.DB_PORT}`)
 })
 
 
+amqplib.connect('amqp://localhost', (err, conn) => {
+  if (err) throw err;
+
+  // Listener
+  conn.createChannel((err, ch2) => {
+    if (err) throw err;
+
+    ch2.assertQueue(queue);
+
+    ch2.consume(queue, (msg) => {
+      if (msg !== null) {
+        console.log(msg.content.toString());
+        ch2.ack(msg);
+      } 
+      else {
+        console.log('Consumer cancelled by server');
+      }
+    }
+  );
+  }
+);
+
+  // Sender
+  // conn.createChannel((err, ch1) => {
+  //   if (err) throw err;
+
+  //   ch1.assertQueue(queue);
+
+  //   setInterval(() => {
+  //     ch1.sendToQueue(queue, Buffer.from('something to do'));
+  //   }, 1000);
+  // });
+});

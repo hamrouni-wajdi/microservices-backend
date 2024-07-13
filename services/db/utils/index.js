@@ -41,26 +41,17 @@ module.exports.FormateData = (data) => {
   
     channel.bindQueue(q.queue, process.env.EXCHANGE_NAME, process.env.CUSTOMER_SERVICE);
   
-    // channel.consume(
-    //   q.queue,
-    //   (msg) => {
-    //     if (msg) {
-    //       console.log("***** \n the message is: \n **********", msg.content.toString());
-    //       // service.SubscribeEvents(msg.content.toString());
-    //     }
-    //     console.log("[X] received");
-    //   },
-    //   {
-    //     noAck: true,
-    //   }
-    // );
-    channel.consume(q.queue, (msg) => {
-      if (msg !== null) {
-        console.log(msg.content.toString());
-        channel.ack(msg);
-      } else {
-        console.log('Consumer cancelled by server');
+    channel.consume(
+      q.queue,
+      (msg) => {
+        if (msg) {
+          console.log("***** \n the message is: \n **********", msg.content.toString());
+          // service.SubscribeEvents(msg.content.toString());
+        }
+        console.log("[X] received");
+      },
+      {
+        noAck: true,
       }
-    });
-
+    );
   };

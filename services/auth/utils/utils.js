@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const amqplib = require("amqplib");
+const amqplib = require('amqplib/callback_api');
 const dotenv = require("dotenv")
 const axios = require("axios");
 
@@ -30,11 +30,47 @@ module.exports.FormateData = (data) => {
     }
   };
   
-  module.exports.PublishMessage = (channel, service, msg) => {
-    channel.publish(EXCHANGE_NAME, service, Buffer.from(msg));
-    console.log("Sent: ", msg);
+  module.exports.formatMsg=(sender,reciever, action,payload)=>{sender,reciever, action,payload}
+  
+  module.exports.PublishMessage = (hostUrl,queue ,sender,reciever, action,payload) => {
+    amqplib.connect('amqp://localhost', (err, conn) => {
+      if (err) throw err;
+      // Sender
+      const msg = {sender,reciever, action,payload}
+      conn.createChannel((err, ch1) => {
+        if (err) throw err;
+    
+        ch1.assertQueue(queue);
+    
+          ch1.sendToQueue(queue, Buffer.from(JSON.stringify(msg)));
+      });
+    });
   };
   
+ module.exports.recieveMsg = (hostUrl,queue,cb)=>{
+  amqplib.connect('amqp://localhost', (err, conn) => {
+    if (err) throw err;
+  
+    conn.createChannel((err, ch2) => {
+      if (err) throw err;
+  
+      ch2.assertQueue(queue);
+  
+      ch2.consume(queue, (msg) => {
+        if (msg !== null) {
+          console.log(msg.content.toString());
+          ch2.ack(msg);
+        } 
+        else {
+          console.log('Consumer cancelled by server');
+        }
+      }
+    );
+    }
+ );
+  
+ })}
+
   module.exports.SubscribeMessage = async (channel, service) => {
     await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
     const q = await channel.assertQueue("", { exclusive: true });

@@ -8,9 +8,9 @@ require('dotenv').config()
 app.use(cors());
 app.use(express.json());
 
-app.use('/db',proxy("http://localhost:8000"));
-app.use("/auth", proxy("http://localhost:8001"));
-app.use("/payement", proxy("http://localhost:8002"));
+app.use('/db',proxy(`http://localhost:${process.env.DB_PORT}`));
+app.use("/auth", proxy(`http://localhost:${process.env.AUTH_PORT}`));
+app.use("/payement", proxy(`http://localhost:${process.env.PAYMENT_PORT}`));
 app.get("/",(req,res)=>{
     res.status(200).json({msg:"gateway working"})
 })

@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Customer extends Model {
     /**
@@ -25,5 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Customer',
   });
+  Customer.associate = function(models) {
+    Customer.belongsToMany(models.Product, { through: models.CustomerProduct, as: 'products', foreignKey: 'customerId' });
+  };
   return Customer;
 };

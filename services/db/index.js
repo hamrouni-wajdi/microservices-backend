@@ -25,7 +25,7 @@ app.get("/",(req,res)=>{
 
 
 app.post("/register",async(req,res)=>{
-  console.log("register customer ===============================")
+  console.log("register customer ===============================",req.body)
   
   try {
       const { username, email, password, firstname,lastname,address,phone } = req.body;

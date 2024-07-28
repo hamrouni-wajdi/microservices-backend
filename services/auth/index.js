@@ -3,13 +3,13 @@ const app = express()
 app.use(express.json());
 require('dotenv').config()
 const db = require("./models")
-
+const createUser = require("./middlewares/createUser")
 const amqplib = require('amqplib/callback_api');
 const queue = 'tasks';
 
 
 const {FormateData,CreateChannel,PublishMessage,SubscribeMessage,PublishDbEvent,recieveMsg}=require("./utils/utils")
-db.sequelize.sync({ force: true })
+db.sequelize.sync()
 .then(() => {
   console.log('Connection has been established successfully.');
 })
@@ -26,8 +26,10 @@ app.get("/",(req,res)=>{
     return res.status(200).json({"msg": "Hello from auth"})
 })
 
+
+
 app.post("/register",(req,res)=>{
-    return res.status(200).json(req.body)
+    console.log(req.body)
 })
 
 app.post("/login",(req,res)=>{

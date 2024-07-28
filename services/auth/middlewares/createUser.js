@@ -1,4 +1,4 @@
-const { User, Profile, sequelize } = require('./models'); // Adjust the path as needed
+const { User, Profile, sequelize } = require('../models'); // Adjust the path as needed
 const bcrypt = require('bcrypt');
 
 async function createUserWithProfile(userData, profileData) {
@@ -55,6 +55,10 @@ const profileData = {
     currency: 'USD'
   }
 };
+
+module.exports = {createUserWithProfile, userData, profileData}
+
+
 
 // createUserWithProfile(userData, profileData)
 //   .then(user => {

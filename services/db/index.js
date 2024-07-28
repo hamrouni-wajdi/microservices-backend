@@ -43,7 +43,11 @@ app.post("/register",async(req,res)=>{
         phone
       });
       customer.save()
-      res.status(201).json({ customer });
+         // Generate a JWT token
+    const token = jwt.sign({ customer: customer.id, username: customer.username }, process.env.APP_SECRET, {
+      expiresIn: '1h',
+    });
+      res.status(201).json({ customer,token });
     } catch (error) {
       console.error('Registration failed', error.message);
       res.status(500).json({ error: 'Registration failed' });

@@ -2,12 +2,24 @@ const express = require("express");
 const app = express()
 app.use(express.json());
 require('dotenv').config()
+const db = require("./models")
+
 const amqplib = require('amqplib/callback_api');
 const queue = 'tasks';
 
 
 const {FormateData,CreateChannel,PublishMessage,SubscribeMessage,PublishDbEvent,recieveMsg}=require("./utils/utils")
+db.sequelize.sync({ force: true })
+.then(() => {
+  console.log('Connection has been established successfully.');
+})
+.catch(err => {
+  console.error('Unable to connect to the database:', err);
+});
 
+app.get("/",(req,res)=>{
+    return res.status(200).json({"msg": "Hello from DB"})
+})
 
 
 app.get("/",(req,res)=>{
